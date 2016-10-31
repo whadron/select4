@@ -42,19 +42,9 @@
       </select>
     </div>
   </body>
+  <script src="sample_data/countries.js"></script>
   <script src="js/select4.js"></script>
   <script>
-    var get = function get(url, callback) {
-      var req = new XMLHttpRequest();
-      req.onreadystatechange = function() { 
-        if (req.readyState === 4 && req.status === 200) {
-          callback(req.responseText);
-        }
-      }
-      req.open("GET", url, true);
-      req.send(null);
-    };
-
     var el = document.querySelector('#select');
     var s4 = new Select4(el, {
       placeholder: 'Select 4 Demo',
@@ -63,12 +53,8 @@
       }
     });
 
-    var countryURL = 'http://data.okfn.org/data/core/country-list/r/data.json';
-    get(countryURL, function (res) {
-      var countries = JSON.parse(res);
-      for (var i in countries) {
-        s4.add(countries[i].Name, countries[i].Code);
-      }
-    });
+    for (var i in countries) {
+      s4.add(countries[i].name, countries[i].code);
+    }
   </script>
 </html>
