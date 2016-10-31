@@ -38,7 +38,6 @@
 
     this.rootEl.addEventListener('focus', this.onFocus.bind(this), false);
     this.rootEl.addEventListener('blur', this.onBlur.bind(this),  false);
-    this.rootEl.addEventListener('click', this.onClick.bind(this), false);
     this.rootEl.addEventListener('mouseover', this.onMouseOver.bind(this), false);
 
     this.displaySpan = d.createElement('span');
@@ -153,6 +152,7 @@
   };
 
   Select4.prototype.onKeyPress = function onKeyPress(e) {
+    e.preventDefault();
     var code = e.which || e.keyCode;
     if (code) {
       var keyChar = String.fromCharCode(code);
@@ -164,18 +164,16 @@
   };
 
   Select4.prototype.onKeyDown = function onKeyDown(e) {
+    var caught = true;
     switch (e.which) {
     case 13: // ENTER
-      e.preventDefault();
       this.selectAtFocus();
       this.close.call(this);
       break;
     case 27: // ESC
-      e.preventDefault();
       this.close.call(this);
       break;
     case 38: // UP
-      e.preventDefault();
       if (this.isOpen === false) {
         this.open.call(this);
       }
@@ -191,10 +189,8 @@
       }
       break;
     case 39: // RIGHT
-      e.preventDefault();
       break;
     case 40: // DOWN
-      e.preventDefault();
       if (this.isOpen === false) {
         this.open.call(this);
       }
@@ -210,15 +206,19 @@
       }
       break;
     case 37: // LEFT
-      e.preventDefault();
       break;
     case 32: // SPACE
-      e.preventDefault();
       if (this.searchQuery.length > 0) {
         this.search.call(this, ' ');
       }
       break;
+    default:
+      caught = false;
     };
+
+    if (caught) {
+      e.preventDefault();
+    }
   };
 
   Select4.prototype.startArrowCooldown = function startArrowCooldown() {
@@ -234,6 +234,7 @@
   };
 
   Select4.prototype.open = function open() {
+    console.log('open');
     this.rootEl.classList.add('open');
     this.optionsUl.style.display = 'block';
     this.isOpen = true;
@@ -249,6 +250,7 @@
   };
 
   Select4.prototype.close = function close() {
+    console.log('close');
     this.rootEl.classList.remove('open');
     this.optionsUl.style.display = 'none';
     this.isOpen = false;
@@ -352,26 +354,24 @@
     this.searchQuery = '';
   };
 
-  Select4.prototype.onFocus = function onFocus() {
+  Select4.prototype.onFocus = function onFocus(e) {
+    console.log('onFocus');
+    e.preventDefault();
+    e.stopPropagation();
     this.open.call(this);
     this.rootEl.addEventListener('keypress', this.keyEventPress, false);
     this.rootEl.addEventListener('keydown', this.keyEventDown, false);
   };
 
-  Select4.prototype.onBlur = function onBlur() {
+  Select4.prototype.onBlur = function onBlur(e) {
+    console.log('onBlur');
+    e.preventDefault();
+    e.stopPropagation();
     if (this.isOpen) {
       this.close.call(this);
     }
     this.rootEl.removeEventListener('keypress', this.keyEventPress, false);
     this.rootEl.removeEventListener('keydown', this.keyEventDown, false);
-  };
-
-  Select4.prototype.onClick = function onClick() {
-    if (this.isOpen) {
-      this.close.call(this);
-    } else {
-      this.open.call(this);
-    }
   };
 
   Select4.prototype.onMouseOver = function onMouseOver(e) {
