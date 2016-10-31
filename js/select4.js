@@ -88,7 +88,12 @@
     return this.activeOptions;
   };
 
-  Select4.prototype.add = function add(option) {
+  Select4.prototype.add = function add(text, value) {
+    var option = new Option(text, value);
+    this.addOption.call(this, option);
+  };
+
+  Select4.prototype.addOption = function addOption(option) {
     var _this = this;
     var selectionChanged = option.selected;
     this.select.add(option);
@@ -98,9 +103,6 @@
     var clickFunction = function (idx) {
       return function () { _this.selectAtIndex.call(_this, idx); }
     };
-    var mouseoverFunction = function (idx) {
-      return function () { _this.focusOnIndex.call(_this, idx); }
-    };
 
     this.activeOptions++;
     var optionLi = d.createElement('li');
@@ -108,7 +110,6 @@
     optionLi.innerHTML = option.text;
     optionLi['data-index'] = i;
     optionLi.addEventListener('click', clickFunction.call(this, i), false);
-    optionLi.addEventListener('mouseover', mouseoverFunction.call(this, i), false);
     this.optionsUl.appendChild(optionLi)
 
     if (selectionChanged) {
