@@ -47,8 +47,9 @@
     }
     this.rootEl.appendChild(this.displaySpan);
 
-    // Keeping track of the keyevent function
-    this.keyEventFunc = this.onKeyEvent.bind(this);
+    // Keeping track of the keyevent functions
+    this.keyEventPress = this.onKeyPress.bind(this);
+    this.keyEventDown = this.onKeyDown.bind(this);
     
     var parentNode = this.select.parentNode;
     parentNode.insertBefore(this.rootEl, this.select);
@@ -151,7 +152,18 @@
     this.deselect.call(this);
   };
 
-  Select4.prototype.onKeyEvent = function onKeyEvent(e) {
+  Select4.prototype.onKeyPress = function onKeyPress(e) {
+    var code = e.which || e.keyCode;
+    if (code) {
+      var keyChar = String.fromCharCode(code);
+      var strippedChar = keyChar.replace(/^\s+|\s+$/g, '');
+      if (strippedChar.length > 0) {
+        this.search.call(this, strippedChar);
+      }
+    };
+  };
+
+  Select4.prototype.onKeyDown = function onKeyDown(e) {
     switch (e.which) {
     case 13: // ENTER
       e.preventDefault();
@@ -206,12 +218,6 @@
         this.search.call(this, ' ');
       }
       break;
-    default: // OTHER KEYS
-      var keyChar = String.fromCharCode(e.keyCode);
-      var strippedChar = keyChar.replace(/^\s+|\s+$/g, '');
-      if (strippedChar.length > 0) {
-        this.search.call(this, strippedChar);
-      }
     };
   };
 
@@ -348,14 +354,16 @@
 
   Select4.prototype.onFocus = function onFocus() {
     this.open.call(this);
-    this.rootEl.addEventListener('keydown', this.keyEventFunc, false);
+    this.rootEl.addEventListener('keypress', this.keyEventPress, false);
+    this.rootEl.addEventListener('keydown', this.keyEventDown, false);
   };
 
   Select4.prototype.onBlur = function onBlur() {
     if (this.isOpen) {
       this.close.call(this);
     }
-    this.rootEl.removeEventListener('keydown', this.keyEventFunc, false);
+    this.rootEl.removeEventListener('keypress', this.keyEventPress, false);
+    this.rootEl.removeEventListener('keydown', this.keyEventDown, false);
   };
 
   Select4.prototype.onClick = function onClick() {
