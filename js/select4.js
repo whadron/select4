@@ -313,6 +313,8 @@
   };
 
   Select4.prototype.search = function search(newChar) {
+    this.startArrowCooldown.call(this);
+    
     // Search beginning or words in each item
     this.searchQuery += newChar;
 
