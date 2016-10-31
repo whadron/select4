@@ -38,6 +38,7 @@
 
     this.rootEl.addEventListener('focus', this.onFocus.bind(this), false);
     this.rootEl.addEventListener('blur', this.onBlur.bind(this),  false);
+    this.rootEl.addEventListener('click', this.onClickRoot.bind(this), false);
     this.rootEl.addEventListener('mouseover', this.onMouseOver.bind(this), false);
 
     this.displaySpan = d.createElement('span');
@@ -80,6 +81,7 @@
       this.displaySpan.className = 'placeholder';
       this.displaySpan.innerHTML = this.placeholder;
     }
+    this.optionsUl.addEventListener('click', this.onClickUl.bind(this), false);
 
     this.rootEl.appendChild(this.optionsUl);
   };
@@ -234,7 +236,6 @@
   };
 
   Select4.prototype.open = function open() {
-    console.log('open');
     this.rootEl.classList.add('open');
     this.optionsUl.style.display = 'block';
     this.isOpen = true;
@@ -250,7 +251,6 @@
   };
 
   Select4.prototype.close = function close() {
-    console.log('close');
     this.rootEl.classList.remove('open');
     this.optionsUl.style.display = 'none';
     this.isOpen = false;
@@ -355,7 +355,6 @@
   };
 
   Select4.prototype.onFocus = function onFocus(e) {
-    console.log('onFocus');
     e.preventDefault();
     e.stopPropagation();
     this.open.call(this);
@@ -364,7 +363,6 @@
   };
 
   Select4.prototype.onBlur = function onBlur(e) {
-    console.log('onBlur');
     e.preventDefault();
     e.stopPropagation();
     if (this.isOpen) {
@@ -372,6 +370,18 @@
     }
     this.rootEl.removeEventListener('keypress', this.keyEventPress, false);
     this.rootEl.removeEventListener('keydown', this.keyEventDown, false);
+  };
+
+  Select4.prototype.onClickRoot = function onClickRoot(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.open.call(this);
+  };
+
+  Select4.prototype.onClickUl = function onClickUl(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.close.call(this);
   };
 
   Select4.prototype.onMouseOver = function onMouseOver(e) {
