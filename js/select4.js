@@ -18,6 +18,7 @@
 
     this.isOpen = false;
     this.activeOptions = 0;
+    this.hasEmptyElem = false;
     this.focus = 0;
     this.arrowCooldownTimer = null;
     this.arrowCooldown = false;
@@ -29,6 +30,7 @@
 
     // Add empty first option that is disabled if select has no options
     if (this.select.options.length == 0) {
+      this.hasEmptyElem = true;
       var empty = new Option('', '', true, true);
       empty.disabled = true;
       this.select.add(empty);
@@ -124,7 +126,12 @@
         var optionLi = this.optionsUl.childNodes[i];
         optionLi.className = '';
       }
-      this.optionsUl.childNodes[idx-1].className = 'selected';
+
+      if (this.hasEmptyElem) {
+        this.optionsUl.childNodes[idx-1].className = 'selected';
+      } else {
+        this.optionsUl.childNodes[idx].className = 'selected';
+      }
     }
   };
 
