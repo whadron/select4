@@ -1,6 +1,8 @@
 ;(function (w, d) {
   'use strict';
 
+  var searchTimeout = 700;
+
   var Select4 = function Select4(select, opts) {
     if (select === undefined || select === null) {
       return null;
@@ -16,6 +18,7 @@
 
     this.isOpen = false;
     this.activeOptions = 0;
+    this.hasEmptyElem = false;
     this.focus = 0;
     this.arrowCooldownTimer = null;
     this.arrowCooldown = false;
@@ -27,6 +30,7 @@
 
     // Add empty first option that is disabled if select has no options
     if (this.select.options.length == 0) {
+      this.hasEmptyElem = true;
       var empty = new Option('', '', true, true);
       empty.disabled = true;
       this.select.add(empty);
@@ -122,7 +126,12 @@
         var optionLi = this.optionsUl.childNodes[i];
         optionLi.className = '';
       }
-      this.optionsUl.childNodes[idx].className = 'selected';
+
+      if (this.hasEmptyElem) {
+        this.optionsUl.childNodes[idx-1].className = 'selected';
+      } else {
+        this.optionsUl.childNodes[idx].className = 'selected';
+      }
     }
   };
 
@@ -154,8 +163,15 @@
   };
 
   Select4.prototype.onKeyPress = function onKeyPress(e) {
-    e.preventDefault();
     var code = e.which || e.keyCode;
+
+    // Don't prevent tabbing away from select on Firefox
+    if (code === 9) {
+      return;
+    }
+
+    e.preventDefault();
+
     if (code) {
       var keyChar = String.fromCharCode(code);
       var strippedChar = keyChar.replace(/^\s+|\s+$/g, '');
@@ -327,13 +343,13 @@
     // Search beginning or words in each item
     this.searchQuery += newChar;
 
-    //var re = new RegExp('\\b' + this.searchQuery, 'gi');
     var re = new RegExp('^' + this.searchQuery, 'gi');
     var found = false;
     for (var i=0; i<this.select.options.length; i++) {
       var option = this.select.options[i];
       if (re.exec(option.text)) {
         this.focusOnIndex.call(this, option.index);
+        this.selectAtFocus();
         found = true;
         break;
       }
@@ -347,7 +363,7 @@
       clearTimeout(this.searchTimer);
     }
 
-    this.searchTimer = setTimeout(this.searchTimeout.bind(this), 500);
+    this.searchTimer = setTimeout(this.searchTimeout.bind(this), searchTimeout);
   };
 
   Select4.prototype.searchTimeout = function searchTimeout() {
@@ -357,7 +373,6 @@
   Select4.prototype.onFocus = function onFocus(e) {
     e.preventDefault();
     e.stopPropagation();
-    this.open.call(this);
     this.rootEl.addEventListener('keypress', this.keyEventPress, false);
     this.rootEl.addEventListener('keydown', this.keyEventDown, false);
   };
